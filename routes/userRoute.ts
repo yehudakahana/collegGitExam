@@ -21,21 +21,23 @@ const router = express.Router();
  *                      properties:
  *                          name:
  *                              type: string
- *                          passportId:
+ *                          email:
  *                              type: string
- *                              pattern: "^[0-9]{9}$"  # 9 ספרות
  *                          password:
  *                              type: string
- *                              pattern: "^[0-9]{8}$"  # 8 ספרות
  *                          role:
  *                              type: string
  *                              enum: [teacher, student]
  *                              default: student
+ *                          className:
+ *                              type: string
+ * 
  *          example: 
  *              name: "name"
- *              passportId: "123456789"
+ *              email: "123456789"
  *              password: "12345678"
  *              role: "student"
+ *              className: "class name"
  *      responses: 
  *          200:
  *              description: User created successfully      
@@ -54,15 +56,14 @@ router.route("/register").post(createUser);
  *                  schema:
  *                      type: object
  *                      properties:
- *                          passportId:
- *                              type: string
- *                              pattern: "^[0-9]{9}$"  # 9 ספרות
+ *                          email:
+ *                              type: string    
  *                          password:
  *                              type: string
- *                              pattern: "^[0-9]{8}$"  # 8 ספרות
- *                  example: 
- *                      passportId: "123456789"
- *                      password: "12345678"
+ *                             
+ *          example: 
+ *               email: "yossi@yossi"
+ *               password: "12345678"
  *      responses: 
  *          200:
  *              description: User login successfully      

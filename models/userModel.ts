@@ -62,7 +62,7 @@ const userSchema: Schema = new mongoose.Schema({
     classId: {
         type: Schema.Types.ObjectId,
         ref: "Class",
-        required: true,    
+           
     }
 });
 

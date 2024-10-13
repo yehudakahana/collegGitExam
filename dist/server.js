@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const userRoute_js_1 = __importDefault(require("./routes/userRoute.js"));
+const teacherRout_js_1 = __importDefault(require("./routes/teacherRout.js"));
+const studentRout_js_1 = __importDefault(require("./routes/studentRout.js"));
 const db_js_1 = __importDefault(require("./config/db.js"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -17,7 +19,7 @@ const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_js_1.swaggerSpec));
-app.use("/", userRoute_js_1.default);
+app.use("/", userRoute_js_1.default, teacherRout_js_1.default, studentRout_js_1.default);
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });

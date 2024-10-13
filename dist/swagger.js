@@ -10,7 +10,7 @@ const swaggerDefinition = {
     info: {
         title: "College API",
         version: "1.0.0",
-        description: "API for College",
+        description: "API for CollegeExam",
     },
     servers: [
         {
@@ -19,7 +19,7 @@ const swaggerDefinition = {
     ],
 };
 const options = {
-    swaggerDefinition,
-    apis: ["./routes/*.js", "./server.js"],
+    definition: swaggerDefinition,
+    apis: ["./dist/routes/*.js", "./server.js"],
 };
 exports.swaggerSpec = (0, swagger_jsdoc_1.default)(options);

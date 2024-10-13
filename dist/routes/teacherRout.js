@@ -1,12 +1,13 @@
-import express from "express";
-import authenticateToken from "../middleware/auth.js"; 
-import { getAllUsers, getAvaregeAll, getAllGrades, addGrade, updateGrade } from "../controllers/teacherController.js";
-
-const router = express.Router();
-router.use(authenticateToken); 
-
-
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_js_1 = __importDefault(require("../middleware/auth.js"));
+const teacherController_js_1 = require("../controllers/teacherController.js");
+const router = express_1.default.Router();
+router.use(auth_js_1.default);
 /**
  * @swagger
  * /teacher:
@@ -14,10 +15,9 @@ router.use(authenticateToken);
  *      summary: Get all users
  *      responses:
  *          200:
- *              description: Get all users    
+ *              description: Get all users
  */
-router.route("/teacher").get(getAllUsers);
-
+router.route("/teacher").get(teacherController_js_1.getAllUsers);
 /**
  * @swagger
  * /teacher/getGrades:
@@ -25,10 +25,9 @@ router.route("/teacher").get(getAllUsers);
  *      summary: Get all grades
  *      responses:
  *          200:
- *              description: Get all grades    
+ *              description: Get all grades
  */
-router.route("/teacher/getGrades").get(getAllGrades);
-
+router.route("/teacher/getGrades").get(teacherController_js_1.getAllGrades);
 /**
  * @swagger
  * /teacher/getAvarege:
@@ -36,9 +35,9 @@ router.route("/teacher/getGrades").get(getAllGrades);
  *      summary: Get average grades for all students
  *      responses:
  *          200:
- *              description: Get average grades    
+ *              description: Get average grades
  */
-router.route("/teacher/getAvarege").get(getAvaregeAll);
+router.route("/teacher/getAvarege").get(teacherController_js_1.getAvaregeAll);
 /**
  * @swagger
  * /teacher/addGrade:
@@ -72,13 +71,7 @@ router.route("/teacher/getAvarege").get(getAvaregeAll);
  *                          - score  # Added "score" under the grade object
  *      responses:
  *          200:
- *              description: Grade added successfully    
+ *              description: Grade added successfully
  */
-
-
-router.route("/teacher/addGrade").post(addGrade);
-
-
-router.route("/teacher/updateGrade").post(updateGrade);
-
-export default router;
+router.route("/teacher/addGrade").post(teacherController_js_1.addGrade);
+exports.default = router;

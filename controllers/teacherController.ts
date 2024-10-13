@@ -1,6 +1,7 @@
 import userModel from "../models/userModel.js";
 import { Response } from "express";
 import { UserRequest } from '../middleware/auth.js'; 
+import classModel from "../models/classModel.js";
 
 
 // הבאת כל היוזרים
@@ -19,35 +20,26 @@ export const getAllUsers = async (req: UserRequest, res: Response): Promise<void
 }
 
 
-// הבאת כל השמות עם הציונים שלהם
+
+// הבאת ציוני כל הסטודנטים בכיתה
 export const getAllGrades = async (req: UserRequest, res: Response): Promise<void> => {
     try {
-        if (req.user?.role !== "teacher") { 
+        const teacher = req.user!;
+        if (teacher.role !== "teacher") { 
             res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
             return; 
         }   
+         
+        const classroom = await classModel.findById(teacher.classId).populate('students');
+        res.status(200).json(classroom);
 
-        const usersWithGrades = await userModel.aggregate([
-            {
-                $match: {
-                    role: "student"
-                }
-            },
-            {
-                $project: {     
-                    _id : 0,              
-                    name: 1,
-                    grades: 1
-                }
-            }
-        ]);
-
-        res.status(200).json(usersWithGrades);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error getting all grades" });
     }
 }
+
+
 
 // הבאת ממוצע ציוני כל הסטודנטים
 export const getAvaregeAll = async (req: UserRequest, res: Response): Promise<void> => {
@@ -95,27 +87,53 @@ export const addGrade = async (req: UserRequest, res: Response): Promise<void> =
             res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
             return; 
         }   
-
-        const { password, grade } = req.body;
-
-        if (!password || !grade) {
+        const { studentId, grade } = req.body;
+        if (!studentId || !grade) {
             res.status(400).json({ message: "Missing required fields" });
             return;
         }
+        
+        const student = await userModel.findById(studentId);
+        if (!student) {
+            res.status(404).json({ message: "Student not found" });
+            return;
+        }
+        if(student?.className !== req.user!.className){
+            res.status(403).json({ message: "Forbidden: you can only add grades to your own class." });
+        }
 
         const updatedGrade = await userModel.findOneAndUpdate(
-            { password },
+            { _id: studentId },
             { $push: { grades: { ...grade } } },
             { new: true }
         );
 
-        if (!updatedGrade) {
-            res.status(404).json({ message: "User not found" });
-            return;
-        }
-
-        res.status(200).json(grade);
+        res.status(200).json(updatedGrade);
     } catch (error) {
         res.status(500).json({ message: "Error adding grade" });
     }
+}
+
+
+//עדכון ציון
+export const updateGrade = async (req: UserRequest, res: Response): Promise<void> => {
+    // try {
+    //     if (req.user?.role !== "teacher") { 
+    //         res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
+    //         return; 
+    //     }   
+    //     const { studentId, grade } = req.body;
+    //     if (!studentId || !grade) {
+    //         res.status(400).json({ message: "Missing required fields" });
+    //         return;
+    //     }
+    //     const updatedGrade = await userModel.findOneAndUpdate(
+    //         { _id: studentId, "grades._id": grade._id },
+    //         { $set: { "grades.$": grade } },
+    //         { new: true }
+    //     );
+    //     res.status(200).json(updatedGrade);
+    // } catch (error) {
+    //     res.status(500).json({ message: "Error updating grade" });
+    // }
 }

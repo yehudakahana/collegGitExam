@@ -69,7 +69,6 @@ const userSchema = new mongoose_1.default.Schema({
     classId: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "Class",
-        required: true,
     }
 });
 exports.default = mongoose_1.default.model("User", userSchema);

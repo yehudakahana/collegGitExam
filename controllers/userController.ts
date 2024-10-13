@@ -28,6 +28,9 @@ export const createUser = async (req: Request, res: Response) => {
            const newUser  = await userModel.create(user);
            newUser.classId = myClass._id  as ObjectId;
            myClass.students!.push(newUser._id as ObjectId);
+           myClass.save();
+           res.status(201).json(newUser._id);
+           
         }
 
         else {
@@ -38,6 +41,7 @@ export const createUser = async (req: Request, res: Response) => {
             const newUser = await userModel.create(user);
             const newClass = await classModel.create({name: user.className});
             newUser.classId = newClass._id  as ObjectId;
+            newUser.save();
             res.status(201).json(newClass._id); 
         }
         
