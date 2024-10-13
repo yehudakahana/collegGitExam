@@ -1,11 +1,12 @@
 import express from "express";
 import userRouter from "./routes/userRoute.js";
+import teachrRouter from "./routes/teacherRout.js";
+import studentRouter from "./routes/studentRout.js";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
 import swaggerUi from "swagger-ui-express";
 import {swaggerSpec} from "./swagger.js";    
-
 
 
 
@@ -21,7 +22,7 @@ app.use(cookieParser());
 
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/", userRouter);
+app.use("/", userRouter, teachrRouter, studentRouter);
 
 
 
