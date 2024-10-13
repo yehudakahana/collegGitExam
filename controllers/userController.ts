@@ -69,41 +69,41 @@ const getGradeFromDB = async (passportId: string): Promise<any> => {
 
 // הבאת ציוני סטודנט ספציפי
 export const getStudentGrades = async (req: UserRequest, res: Response): Promise<void> => {
-    try {
-        const grades = await getGradeFromDB(req.user!.passportId);
+    // try {
+    //     const grades = await getGradeFromDB(req.user!.passportId);
         
-        if (!grades) {
-            res.status(404).json({ message: "User grades not found" });
-            return;
-        }
+    //     if (!grades) {
+    //         res.status(404).json({ message: "User grades not found" });
+    //         return;
+    //     }
 
-        res.status(200).json(grades);
-    } catch (error) {
-        res.status(500).json({ message: "Error getting student grades" });
-    }
+    //     res.status(200).json(grades);
+    // } catch (error) {
+    //     res.status(500).json({ message: "Error getting student grades" });
+    // }
 }
 
 
 // הבאת ממוצע ציוני סטודנט
 export const getStudentAverage = async (req: UserRequest, res: Response): Promise<void> => {
-    try {
-        const grades = await getGradeFromDB(req.user!.passportId);
+    // try {
+    //     const grades = await getGradeFromDB(req.user!.passportId);
 
         
-        if ( !grades || grades.length === 0) {
-            res.status(404).json({ message: "User grades not found" });
-            return;
-        }
+    //     if ( !grades || grades.length === 0) {
+    //         res.status(404).json({ message: "User grades not found" });
+    //         return;
+    //     }
 
-        const validGrades: IGrade[] = grades.filter((grade: IGrade) => typeof grade.score === 'number');
-        const totalScore: number = validGrades.reduce((sum, grade) => sum + grade.score, 0);
-        const average: number = validGrades.length > 0 ? totalScore / validGrades.length : 0;
+    //     const validGrades: IGrade[] = grades.filter((grade: IGrade) => typeof grade.score === 'number');
+    //     const totalScore: number = validGrades.reduce((sum, grade) => sum + grade.score, 0);
+    //     const average: number = validGrades.length > 0 ? totalScore / validGrades.length : 0;
 
 
-        res.status(200).json({ average });
-    } catch (error) {    
-        res.status(500).json({ message: "Error getting student average" });
-    }
+    //     res.status(200).json({ average });
+    // } catch (error) {    
+    //     res.status(500).json({ message: "Error getting student average" });
+    // }
 }
   
 

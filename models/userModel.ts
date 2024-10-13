@@ -2,15 +2,18 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IGrade {
     subject: string;  
-    score: number;   
+    score: number; 
+    commant: string;  
 }
 
 export interface IUser extends Document {
     name: string;
-    passportId: string;
+    email: string;
     password: string;
     grades?: IGrade[];  
     role: "teacher" | "student";
+    className : string;
+    classId? : Schema.Types.ObjectId;
 }
 
 const userSchema: Schema = new mongoose.Schema({
@@ -18,11 +21,11 @@ const userSchema: Schema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    passportId: {
+    email: {
         type: String,
-        required: [true, "Please provide your passportId"],
+        required: [true, "Please provide your email"],
         unique: true, 
-        match: [/^[0-9]{9}$/, "passportId must be  9 digits"]
+        match: [/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/, "please provide valid email"],
     },
     password: {
         type: String,
@@ -40,14 +43,27 @@ const userSchema: Schema = new mongoose.Schema({
                 type: Number,
                 required: [true, "Please provide score"],
             },
+            commant: {
+                type: String,
+                required: [true, "Please provide commant"],
+            },
         }],
-        default: [],
+    
     },
     role: {
         type: String,
         enum: ["teacher", "student"],
         required: true, 
     },
+    className: {
+        type: String,
+        required: [true,'Please provide class name'],
+    },
+    classId: {
+        type: Schema.Types.ObjectId,
+        ref: "Class",
+        required: true,    
+    }
 });
 
 export default mongoose.model<IUser>("User", userSchema);
