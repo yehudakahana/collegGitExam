@@ -78,7 +78,41 @@ router.route("/teacher/getAvarege").get(getAvaregeAll);
 
 router.route("/teacher/addGrade").post(addGrade);
 
-
+/**
+ * @swagger
+ * /teacher/updateGrade:
+ *  post:
+ *      summary: update  grade for a student
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          studentId:
+ *                              type: string
+ *                              example: "987654321"
+ *                          grade:
+ *                              type: object
+ *                              properties:
+ *                                  subject:
+ *                                      type: string
+ *                                      example: "Math"
+ *                                  score:
+ *                                      type: number
+ *                                      example: 95
+ *                                  commant:  
+ *                                      type: string
+ *                                      example: "excellent"
+ *                      required:
+ *                          - studentId
+ *                          - grade 
+ * 
+ *      responses:
+ *          200:
+ *              description: Grade updated successfully    
+ */
 router.route("/teacher/updateGrade").post(updateGrade);
 
 export default router;

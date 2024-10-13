@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addGrade = exports.getAvaregeAll = exports.getAllGrades = exports.getAllUsers = void 0;
+exports.updateGrade = exports.addGrade = exports.getAvaregeAll = exports.getAllGrades = exports.getAllUsers = void 0;
 const userModel_js_1 = __importDefault(require("../models/userModel.js"));
 const classModel_js_1 = __importDefault(require("../models/classModel.js"));
 // הבאת כל היוזרים
@@ -38,17 +38,19 @@ const getAllGrades = async (req, res) => {
     }
 };
 exports.getAllGrades = getAllGrades;
-// הבאת ממוצע ציוני כל הסטודנטים
+// הבאת ממוצע כל הציונים בכיתה
 const getAvaregeAll = async (req, res) => {
     try {
-        if (req.user?.role !== "teacher") {
+        const teacher = req.user;
+        if (teacher.role !== "teacher") {
             res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
             return;
         }
         const avarege = await userModel_js_1.default.aggregate([
             {
                 $match: {
-                    role: "student"
+                    role: "student",
+                    className: teacher.className
                 }
             },
             {
@@ -103,3 +105,31 @@ const addGrade = async (req, res) => {
     }
 };
 exports.addGrade = addGrade;
+//עדכון ציון
+const updateGrade = async (req, res) => {
+    try {
+        if (req.user?.role !== "teacher") {
+            res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
+            return;
+        }
+        const { studentId, grade } = req.body;
+        if (!studentId || !grade) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
+        }
+        const student = await userModel_js_1.default.findById(studentId);
+        if (!student) {
+            res.status(404).json({ message: "Student not found" });
+            return;
+        }
+        if (student?.className !== req.user.className) {
+            res.status(403).json({ message: "Forbidden: you can only add grades to your own class." });
+        }
+        const updatedGrade = await userModel_js_1.default.findOneAndUpdate({ _id: studentId, "grades.subject": grade.subject }, { $set: { "grades.$": grade } });
+        res.status(200).json(updatedGrade);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error updating grade" });
+    }
+};
+exports.updateGrade = updateGrade;

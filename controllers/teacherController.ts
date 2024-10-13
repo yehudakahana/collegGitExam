@@ -41,10 +41,11 @@ export const getAllGrades = async (req: UserRequest, res: Response): Promise<voi
 
 
 
-// הבאת ממוצע ציוני כל הסטודנטים
+// הבאת ממוצע כל הציונים בכיתה
 export const getAvaregeAll = async (req: UserRequest, res: Response): Promise<void> => {
     try {
-        if (req.user?.role !== "teacher") { 
+        const teacher = req.user!;
+        if (teacher.role !== "teacher") { 
             res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
             return; 
         }
@@ -52,7 +53,8 @@ export const getAvaregeAll = async (req: UserRequest, res: Response): Promise<vo
         const avarege = await userModel.aggregate([
             {
                 $match: {
-                    role: "student"
+                    role: "student",
+                    className: teacher.className
                 }
             },
             {
@@ -80,6 +82,9 @@ export const getAvaregeAll = async (req: UserRequest, res: Response): Promise<vo
     }
 }
 
+
+
+
 //הוספת ציון לסטודנט
 export const addGrade = async (req: UserRequest, res: Response): Promise<void> => {
     try {
@@ -92,7 +97,6 @@ export const addGrade = async (req: UserRequest, res: Response): Promise<void> =
             res.status(400).json({ message: "Missing required fields" });
             return;
         }
-        
         const student = await userModel.findById(studentId);
         if (!student) {
             res.status(404).json({ message: "Student not found" });
@@ -117,23 +121,33 @@ export const addGrade = async (req: UserRequest, res: Response): Promise<void> =
 
 //עדכון ציון
 export const updateGrade = async (req: UserRequest, res: Response): Promise<void> => {
-    // try {
-    //     if (req.user?.role !== "teacher") { 
-    //         res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
-    //         return; 
-    //     }   
-    //     const { studentId, grade } = req.body;
-    //     if (!studentId || !grade) {
-    //         res.status(400).json({ message: "Missing required fields" });
-    //         return;
-    //     }
-    //     const updatedGrade = await userModel.findOneAndUpdate(
-    //         { _id: studentId, "grades._id": grade._id },
-    //         { $set: { "grades.$": grade } },
-    //         { new: true }
-    //     );
-    //     res.status(200).json(updatedGrade);
-    // } catch (error) {
-    //     res.status(500).json({ message: "Error updating grade" });
-    // }
+    try {
+        if (req.user?.role !== "teacher") { 
+            res.status(403).json({ message: "Forbidden: Only teachers can access this resource." });
+            return; 
+        }   
+        const { studentId, grade } = req.body;
+        if (!studentId || !grade) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
+        }
+        const student = await userModel.findById(studentId);
+        if (!student) {
+            res.status(404).json({ message: "Student not found" });
+            return;
+        }
+        if(student?.className !== req.user!.className){
+            res.status(403).json({ message: "Forbidden: you can only add grades to your own class." });
+        }
+
+        const updatedGrade = await userModel.findOneAndUpdate(
+            { _id: studentId, "grades.subject": grade.subject },
+            { $set: { "grades.$": grade } },
+            
+        );
+        res.status(200).json(updatedGrade);
+    } catch (error) {
+        res.status(500).json({ message: "Error updating grade" });
+    }
 }
+
